@@ -21,16 +21,13 @@ optional arguments:
                         print information and decrypt function that extract from base.js and other debug values
 ```
 Should you use this to download youtube video?
-
 A: No, use youtube-dl instead, because I may not maintain this project.
 
 This project can do what?
-
 A: This project simply show you how to download youtube video use python.
 This project include Decrypt_2022_10_29_zh_TW class that be used to decrypt signature cipher
 
 How does this project work?
-
 1. Get the youtube page source code.
 2. Get video name, base.js url, video infomation from source code. The base.js is the script including decrpyt function, in the different video or time may have different base.js url in source code, and its decrypt function will have different name, argument, sequence, but same content inner function.
 3. Extract the decrypt function inner base.js by using regex.
