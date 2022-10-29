@@ -31,7 +31,7 @@ A: No, use youtube-dl instead, because I may not maintain this project.
 
 This project can do what?<br>
 A: This project simply show you how to download youtube video use python.
-This project include Decrypt_2022_10_29_zh_TW class that be used to decrypt signature cipher
+This project include Decrypt_2022_10_29_zh_TW class that be used to decrypt signature cipher.
 
 How does this project work?
 1. Get the youtube page source code.
@@ -41,3 +41,9 @@ How does this project work?
 5. Downloading video and audio by url use thread and range.
 6. Using FFmpeg transform their format to mp4 (h264,aac).
 7. Complete
+
+References:
+[https://github.com/SurpassHR/Youtube_SignatureCipher_Decryptor](https://github.com/SurpassHR/Youtube_SignatureCipher_Decryptor)
+[https://github.com/streamlink/streamlink/blob/master/src/streamlink/plugins/youtube.py](https://github.com/streamlink/streamlink/blob/master/src/streamlink/plugins/youtube.py)
+[https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/extractor/youtube.py](https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/extractor/youtube.py)
+[https://stackoverflow.com/a/68492807](https://stackoverflow.com/a/68492807)
