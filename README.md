@@ -22,6 +22,7 @@ optional arguments:
 ```
 ```cmd
 Example:
+python youtube.py -u https://www.youtube.com/watch?v=piEyKyJ4pFg
 python youtube.py -u https://www.youtube.com/watch?v=piEyKyJ4pFg -list
 python youtube.py -u https://www.youtube.com/watch?v=piEyKyJ4pFg -q best -download
 ```
