@@ -342,7 +342,7 @@ def Main(quality="", prt=1, prt_full=0, list_all=False, download=False):
     print("Download Source Code From Youtube...")
     decrypt = Decrypt_2022_10_29_zh_TW()
     html = request(url)
-    yt = re.search(b"var ytInitialPlayerResponse = (?P<ytInitialPlayerResponse>{(?:[^;]+; codecs)*[^;]+);", html)
+    yt = re.search(b'var ytInitialPlayerResponse = (?P<ytInitialPlayerResponse>{.+("timestamp":){[^}]+}}+);', html)
     js = re.search(b'jsUrl":"(?P<url>.+?base.js)"', html) # Example:"jsUrl":"/s/player/19fc75cf/player_ias.vflset/zh_TW/base.js"
     title = re.search(b'<meta name="title" content="(?P<title>.+?)">', html)
     
@@ -358,7 +358,7 @@ def Main(quality="", prt=1, prt_full=0, list_all=False, download=False):
         yt = json.loads(yt)
     except Exception as e:
         print(e)
-        #print(yt)
+        if prt_full: print(yt)
         raise Exception(-2)
     
     datas = yt["streamingData"]["adaptiveFormats"] if yt["streamingData"]["adaptiveFormats"] else yt["streamingData"]["formats"]
