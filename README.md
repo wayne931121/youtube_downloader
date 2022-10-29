@@ -2,7 +2,7 @@
 download youtube video, decrypt signature cipher, test on 2022.10.29 zh_TW.
 
 ```cmd
-C:\Users\sky66\Downloads>python youtube.py -u https://www.youtube.com/watch?v=piEyKyJ4pFg -h
+C:\Users\$Username\Downloads>python youtube.py -u https://www.youtube.com/watch?v=piEyKyJ4pFg -h
 Get User Argument
 usage: youtube.py [-h] [-url URL] [-list] [-quality QUALITY] [-download] [-print PRINT] [-fullPrint FULLPRINT]
 
