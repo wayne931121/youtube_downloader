@@ -43,7 +43,7 @@ How does this project work?
 7. Complete
 
 References:
-[https://github.com/SurpassHR/Youtube_SignatureCipher_Decryptor](https://github.com/SurpassHR/Youtube_SignatureCipher_Decryptor)
-[https://github.com/streamlink/streamlink/blob/master/src/streamlink/plugins/youtube.py](https://github.com/streamlink/streamlink/blob/master/src/streamlink/plugins/youtube.py)
-[https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/extractor/youtube.py](https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/extractor/youtube.py)
+[https://github.com/SurpassHR/Youtube_SignatureCipher_Decryptor](https://github.com/SurpassHR/Youtube_SignatureCipher_Decryptor)<br>
+[https://github.com/streamlink/streamlink/blob/master/src/streamlink/plugins/youtube.py](https://github.com/streamlink/streamlink/blob/master/src/streamlink/plugins/youtube.py)<br>
+[https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/extractor/youtube.py](https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/extractor/youtube.py)<br>
 [https://stackoverflow.com/a/68492807](https://stackoverflow.com/a/68492807)
