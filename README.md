@@ -20,10 +20,10 @@ optional arguments:
   -fullPrint FULLPRINT, -fp FULLPRINT
                         print information and decrypt function that extract from base.js and other debug values
 ```
-Should you use this to download youtube video?
+Should you use this to download youtube video?<br>
 A: No, use youtube-dl instead, because I may not maintain this project.
 
-This project can do what?
+This project can do what?<br>
 A: This project simply show you how to download youtube video use python.
 This project include Decrypt_2022_10_29_zh_TW class that be used to decrypt signature cipher
 
