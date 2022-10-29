@@ -20,6 +20,11 @@ optional arguments:
   -fullPrint FULLPRINT, -fp FULLPRINT
                         print information and decrypt function that extract from base.js and other debug values
 ```
+```cmd
+Example:
+python youtube.py -u https://www.youtube.com/watch?v=piEyKyJ4pFg -list
+python youtube.py -u https://www.youtube.com/watch?v=piEyKyJ4pFg -q best -download
+```
 Should you use this to download youtube video?<br>
 A: No, use youtube-dl instead, because I may not maintain this project.
 
