@@ -4,21 +4,37 @@ download youtube video, decrypt signature cipher, test on 2022.10.29 zh_TW.
 ```cmd
 C:\Users\Username\Downloads>python youtube.py -u https://www.youtube.com/watch?v=piEyKyJ4pFg -h
 Get User Argument
-usage: youtube.py [-h] [-url URL] [-list] [-quality QUALITY] [-download] [-print PRINT] [-fullPrint FULLPRINT]
+usage: youtube.py [-h] [-url URL] [-list] [-quality QUALITY] [-download] [-print PRINT]
+                  [-fullPrint FULLPRINT] [-combine COMBINE] [-transform TRANSFORM]
+                  [-remove REMOVE] [-audioOnly] [-videoOnly]
 
 Youtube Video Downloader, Test on 2022.10.30 zh_TW.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -url URL, -u URL      input a youtube url
+  -url URL, -u URL      input a youtube url. (str)
   -list, -l             List all information of a youtube video, like video quality.
   -quality QUALITY, -q QUALITY
-                        select a quality you want to view or download. Like Best, best, 1080, 720, 360, 240.
+                        select a quality you want to view or download. Like Best, best, 1080,
+                        720, 360, 240. (str, default:"")
   -download, -d         download the video. (required install ffmpeg on your device.)
   -print PRINT, -p PRINT
-                        print the information and url that we get of a video
+                        print the information and url that we get of a video. (int 1 or 0,
+                        default:1)
   -fullPrint FULLPRINT, -fp FULLPRINT
-                        print information and decrypt function that extract from base.js and other debug values
+                        print information and decrypt function that extract from base.js and
+                        other debug values. (int 1 or 0, default:0)
+  -combine COMBINE, -c COMBINE
+                        after downloading, combine the video and audio or not. (int 1 or 0,
+                        default:1)
+  -transform TRANSFORM, -tr TRANSFORM
+                        after downloading, transform the media format or not. (int 1 or 0,
+                        default:1)
+  -remove REMOVE, -r REMOVE
+                        after downloading, remove the original medias we downloaded or not. (int
+                        1 or 0, default:1)
+  -audioOnly, -a        only download audio.
+  -videoOnly, -v        only download video.
 ```
 ```cmd
 Example:
