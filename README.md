@@ -104,8 +104,6 @@ https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/extractor/youtube.
 
 Base.js is the script which be use to decrypt signature cipher. 
 
-Here are some base.js url I got.
-
 Format:
 ```
 Windows:
@@ -115,7 +113,7 @@ Android:
 
 https://www.youtube.com/s/player/${Js_Id}/player-plasma-ias-tablet-${Country}/base.js
 ```
-Some url I catched: (2022/10/${day})<br>
+Here are some base.js url I catched: (2022/10/${day})<br>
 [https://www.youtube.com/s/player/4bbf8bdb/player_ias.vflset/zh_TW/base.js](https://www.youtube.com/s/player/4bbf8bdb/player_ias.vflset/zh_TW/base.js)
 [https://www.youtube.com/s/player/24c6f8bd/player_ias.vflset/zh_TW/base.js](https://www.youtube.com/s/player/24c6f8bd/player_ias.vflset/zh_TW/base.js)
 [https://www.youtube.com/s/player/64588dad/player_ias.vflset/zh_TW/base.js](https://www.youtube.com/s/player/64588dad/player_ias.vflset/zh_TW/base.js)
