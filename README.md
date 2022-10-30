@@ -47,3 +47,75 @@ References:<br>
 [https://github.com/streamlink/streamlink/blob/master/src/streamlink/plugins/youtube.py](https://github.com/streamlink/streamlink/blob/master/src/streamlink/plugins/youtube.py)<br>
 [https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/extractor/youtube.py](https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/extractor/youtube.py)<br>
 [https://stackoverflow.com/a/68492807](https://stackoverflow.com/a/68492807)
+
+Also see:
+[https://stackoverflow.com/a/74223304/19470749](https://stackoverflow.com/a/74223304/19470749)
+
+Write Downloading Code:
+
+If you want to write this like me, first go to see browser developer tools network, second go to see the youtube website source code, third go to see youtube base.js source code, you also need to use find function, set breakpoint in base.js. It is not needing that see the full source code, just roughly view to find some interesting infomation in it, like googlevideo.com.
+
+Decrypt SignatureCipher:
+
+If you want to decrypt signatureCipher, there is one thing to attention. When you get the decrypt function in base.js, that's not mean you get the currect decrypt function, because in different youtube video may have different base.js url and different decrypt function name, sequence, argument in it. If use wrong decrypt function or give full argument but some is error, rr$d---sn-$s-$s.googlevideo.com will keep 403 forbidden. If not give necessary parameter, it will response "404 Not Found. That’s an error". The real decrypt function in different base.js is not much different, it only change name, rearrange the real decrypt function in Rwa(a){a.split("")...}, and replace the arguments that the real decrypt function will use (int). When you use the currect decrypt function, it will successfully get the video.<br>
+When you want to find the decrypt function in base.js, the key words are: split(""), encodeURIComponent, decodeURIComponent, signature, sig.<br>
+In 2022.10.$day, it format like that:
+```javascript
+Rwa=function(a){a=a.split("");RB.ss(a,4);RB.jM(a,6);RB.jM(a,45);RB.e0(a,3);return a.join("")};
+var RB={ss:function(a){a.reverse()},
+jM:function(a,b){var c=a[0];a[0]=a[b%a.length];a[b%a.length]=c},
+e0:function(a,b){a.splice(0,b)}};
+
+//Today I got
+Qwa=function(a){a=a.split("");PB.Co(a,14);PB.Co(a,14);PB.Zo(a,56);PB.GZ(a,2);return a.join("")};
+var PB={Co:function(a,b){var c=a[0];a[0]=a[b%a.length];a[b%a.length]=c},
+Zo:function(a){a.reverse()},
+GZ:function(a,b){a.splice(0,b)}};
+
+//Common
+QE = function(a, b, c) {  //### This Function will decrypt signatureChiper ###//
+    b = void 0 === b ? "" : b;
+    c = void 0 === c ? "" : c;
+    a = new g.SB(a,!0);
+    a.set("alr", "yes");
+    c && (c = Rwa(decodeURIComponent(c)), //### This Line will decrypt signatureChiper ###//
+    a.set(b, encodeURIComponent(c)));
+    return a
+}
+
+QE = function(a, b, c) {  //### This Function will decrypt signatureChiper ###//
+    b = void 0 === b ? "" : b;
+    c = void 0 === c ? "" : c;
+    a = new g.SB(a,!0);
+    a.set("alr", "yes");
+    c && (c = Qwa(decodeURIComponent(c)), //### This Line will decrypt signatureChiper ###
+    a.set(b, encodeURIComponent(c)));
+    return a
+}
+
+RE=function(a,b,c){b=void 0===b?"":b;c=void 0===c?"":c;a=new g.SB(a,!0);a.set("alr","yes");c&&(c=Rwa(decodeURIComponent(c)),a.set(b,encodeURIComponent(c)));return a};
+```
+What you can search in base.js is "{a=a.split("")", and continue search the function name inner just find.
+
+You can also see the details in:<br>
+https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/extractor/youtube.py#L1403
+
+
+Here are some base.js url I got.
+
+Format:
+
+Windows:
+
+https://www.youtube.com/s/player/${Js_Id}/player_ias.vflset/${Country}/base.js
+Android:
+
+https://www.youtube.com/s/player/${Js_Id}/player-plasma-ias-tablet-${Country}/base.js
+Some url I catched: (2022/10/${day})
+
+[https://www.youtube.com/s/player/4bbf8bdb/player_ias.vflset/zh_TW/base.js](https://www.youtube.com/s/player/4bbf8bdb/player_ias.vflset/zh_TW/base.js)
+[https://www.youtube.com/s/player/24c6f8bd/player_ias.vflset/zh_TW/base.js](https://www.youtube.com/s/player/24c6f8bd/player_ias.vflset/zh_TW/base.js)
+[https://www.youtube.com/s/player/64588dad/player_ias.vflset/zh_TW/base.js](https://www.youtube.com/s/player/64588dad/player_ias.vflset/zh_TW/base.js)
+[https://www.youtube.com/s/player/4bbf8bdb/player-plasma-ias-tablet-zh_TW.vflset/base.js](https://www.youtube.com/s/player/4bbf8bdb/player-plasma-ias-tablet-zh_TW.vflset/base.js)
+[https://www.youtube.com/s/player/24c6f8bd/player-plasma-ias-tablet-zh_TW.vflset/base.js](https://www.youtube.com/s/player/24c6f8bd/player-plasma-ias-tablet-zh_TW.vflset/base.js)
+[https://www.youtube.com/s/player/64588dad/player-plasma-ias-tablet-zh_TW.vflset/base.js](https://www.youtube.com/s/player/64588dad/player-plasma-ias-tablet-zh_TW.vflset/base.js)
