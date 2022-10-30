@@ -62,13 +62,14 @@ When you want to find the decrypt function in base.js, the key words are: split(
 In 2022.10.$day, it format like that:
 
 ```javascript
+//Common
 //Rwa(a){a.split("")...}
 Rwa=function(a){a=a.split("");RB.ss(a,4);RB.jM(a,6);RB.jM(a,45);RB.e0(a,3);return a.join("")};
 var RB={ss:function(a){a.reverse()},
 jM:function(a,b){var c=a[0];a[0]=a[b%a.length];a[b%a.length]=c},
 e0:function(a,b){a.splice(0,b)}};
 
-//Today I got
+//Qwa(a){a.split("")...}
 Qwa=function(a){a=a.split("");PB.Co(a,14);PB.Co(a,14);PB.Zo(a,56);PB.GZ(a,2);return a.join("")};
 var PB={Co:function(a,b){var c=a[0];a[0]=a[b%a.length];a[b%a.length]=c},
 Zo:function(a){a.reverse()},
