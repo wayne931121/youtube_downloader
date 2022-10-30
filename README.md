@@ -33,7 +33,7 @@ This project can do what?<br>
 A: This project simply show you how to download youtube video use python.
 This project include Decrypt_2022_10_29_zh_TW class that be used to decrypt signature cipher.
 
-How does this project work?
+## How does this project work?
 1. Get the youtube page source code.
 2. Get video name, base.js url, video infomation from source code. The base.js is the script including decrpyt function, in the different video or time may have different base.js url in source code, and its decrypt function will have different name, argument, sequence, but same content inner function.
 3. Extract the decrypt function inner base.js by using regex.
@@ -42,7 +42,7 @@ How does this project work?
 6. Using FFmpeg transform their format to mp4 (h264,aac).
 7. Complete
 
-References:<br>
+## References:<br>
 [https://github.com/SurpassHR/Youtube_SignatureCipher_Decryptor](https://github.com/SurpassHR/Youtube_SignatureCipher_Decryptor)<br>
 [https://github.com/streamlink/streamlink/blob/master/src/streamlink/plugins/youtube.py](https://github.com/streamlink/streamlink/blob/master/src/streamlink/plugins/youtube.py)<br>
 [https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/extractor/youtube.py](https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/extractor/youtube.py)<br>
@@ -51,11 +51,11 @@ References:<br>
 Also see:
 [https://stackoverflow.com/a/74223304/19470749](https://stackoverflow.com/a/74223304/19470749)
 
-Write Downloading Code:
+## Write Downloading Code:
 
-If you want to write this like me, first go youtube website seeing browser developer tools network, second go to see the youtube website source code, third go to see youtube base.js source code, you also need to use find function, set breakpoint in base.js. It is not needing that see the full source code, just roughly view to find some interesting infomation in it, like googlevideo.com.
+If you want to write this like me, first go youtube website seeing browser developer tools network, second go to see the youtube website source code, third go to see youtube base.js source code, you also need to use find function, set breakpoint in base.js. It is not needing that see the full source code, just roughly view to find some interesting infomation like googlevideo.com.
 
-Decrypt SignatureCipher:
+## Decrypt SignatureCipher:
 
 If you want to decrypt signatureCipher, there is one thing to attention. When you get the decrypt function in base.js, that's not mean you get the currect decrypt function, because in different youtube video may have different base.js url and different decrypt function name, sequence, argument in it. If use wrong decrypt function or give full argument but some is error, rr$d---sn-$s-$s.googlevideo.com will keep 403 forbidden. If not give necessary parameter, it will response "404 Not Found. That’s an error". The real decrypt function in different base.js is not much different, it only change name, rearrange the real decrypt function in Rwa(a){a.split("")...}, and replace the arguments that the real decrypt function will use (int). When you use the currect decrypt function, it will successfully get the video.<br>
 When you want to find the decrypt function in base.js, the key words are: split(""), encodeURIComponent, decodeURIComponent, signature, sig.<br>
