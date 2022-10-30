@@ -53,7 +53,7 @@ Also see:
 
 Write Downloading Code:
 
-If you want to write this like me, first go to see browser developer tools network, second go to see the youtube website source code, third go to see youtube base.js source code, you also need to use find function, set breakpoint in base.js. It is not needing that see the full source code, just roughly view to find some interesting infomation in it, like googlevideo.com.
+If you want to write this like me, first go youtube website seeing browser developer tools network, second go to see the youtube website source code, third go to see youtube base.js source code, you also need to use find function, set breakpoint in base.js. It is not needing that see the full source code, just roughly view to find some interesting infomation in it, like googlevideo.com.
 
 Decrypt SignatureCipher:
 
