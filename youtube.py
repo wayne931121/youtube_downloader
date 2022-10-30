@@ -308,16 +308,45 @@ def media_connect(media, filename): #快取大小65536, buffersize=65536
     return datas
 
 def media_download(video, audio, title):
-    print("Downloading Video And Audio...")
-    video_filename = "%s_video.%s"%(title, video["mimeType"].split("/")[1].split(";")[0])
-    audio_filename = "%s_audio.%s"%(title, audio["mimeType"].split("/")[1].split(";")[0])
-    video_datas = media_connect(video, video_filename) #下載影片視頻資料 Download video data
-    audio_datas = media_connect(audio, audio_filename) #下載影片音訊資料 Download audio data
-    cmd = 'ffmpeg -i "%s" -i "%s" -c:v libx264 -c:a aac -y "%s.mp4"'%(video_filename, audio_filename, title)
-    print("\nTransform Type:\n%s\n"%cmd)
-    os.system(cmd)
-    os.remove(video_filename)
-    os.remove(audio_filename)
+    title = title.replace("/", ",") #file path will use "/", filename deny "/"
+    video_filename = audio_filename = video_datas = audio_datas = cmd = ""
+    download_both = (not videoOnly) and (not audioOnly)
+    if download_both:
+        print("Downloading Video And Audio...")
+    elif videoOnly:
+        print("Downloading Video")
+    elif audioOnly:
+        print("Downloading Audio")
+    
+    if not audioOnly:
+        vtype = video["mimeType"].split("/")[1].split(";")[0]
+        video_filename = "%s_video.%s"%(title, vtype)
+        video_datas = media_connect(video, video_filename) #下載影片視頻資料 Download video data
+    if not videoOnly:
+        atype = audio["mimeType"].split("/")[1].split(";")[0]
+        audio_filename = "%s_audio.%s"%(title, atype)
+        audio_datas = media_connect(audio, audio_filename) #下載影片音訊資料 Download audio data 
+    if transform:
+        if  download_both and combine:
+            cmd = 'ffmpeg -i "%s" -i "%s" -c:v libx264 -c:a aac -y "%s.mp4"'%(video_filename, audio_filename, title)
+        elif videoOnly:
+            cmd = 'ffmpeg -i "%s" -c:v libx264 -c:a aac -y "%s.mp4"'%(video_filename, title)
+        elif audioOnly:
+            cmd = 'ffmpeg -i "%s" -c:a libmp3lame -y "%s.mp3"'%(audio_filename, title)
+    elif download_both and combine:
+        cmd = 'ffmpeg -i "%s" -i "%s" -c:v copy -c:a copy -y "%s.%s"'%(video_filename, audio_filename, title, vtype)
+    elif videoOnly:
+        pass
+    elif audioOnly:
+        try:
+            os.rename(audio_filename, "%s.%s"%(title, atype))
+        except: #file is exit, maybe video name is as same as audio (type)
+            pass
+    print("\nTransform Type:\n%s\n"%cmd) if transform else print("\nCombine Video and Audio:\n%s\n"%cmd) if download_both and combine else 0
+    if cmd: os.system(cmd)
+    if remove and download_both and combine:
+        os.remove(video_filename)
+        os.remove(audio_filename)
     datas_getter = lambda :(video_datas, audio_datas) #不能直接印出資料，因為影片資料太大可能造成電腦當機。
     return datas_getter
 
@@ -395,9 +424,10 @@ def Main(quality="", prt=1, prt_full=0, list_all=False, download=False):
             media_url = media_url+"&alr=yes&sig="+sigcipher
         i += 1
         if prt and quality!="best" and (quality=="" or ("video" in data["mimeType"] and data["height"]==quality)):
-            print("\n")
-            pretty_print(data)
-            print(media_url)
+            if (not videoOnly and "audio" in data["mimeType"]) or (not audioOnly and "video" in data["mimeType"]):
+                print("\n")
+                pretty_print(data)
+                print(media_url)
         data["url"] = media_url
         if "video" in data["mimeType"]:
             videos.append((video_size(data), media_url, data))
@@ -406,26 +436,32 @@ def Main(quality="", prt=1, prt_full=0, list_all=False, download=False):
     if prt and quality=="best":
         video = max(videos)
         audio = max(audios)
-        print("\n")
-        pretty_print(video[2])
-        print(video[1])
-        print("\n")
-        pretty_print(audio[2])
-        print(audio[1])
+        if not audioOnly:
+            print("\n")
+            pretty_print(video[2]) #(media_size(data), media_url, data)
+            print(video[1])
+        if not videoOnly:
+            print("\n")
+            pretty_print(audio[2])
+            print(audio[1])
     download_datas = []
     if download:
         videos.sort()
         audios.sort()
         video = ""
         audio = ""
-        if quality=="best" or quality=="":
-            video = videos[-1][2]
-        else:
-            for video in videos[::-1]:
-                if video[2]["height"]==quality:
-                    video = video[2]
-                    break
-        audio = audios[-1][2]
+        if not audioOnly:
+            if quality=="best" or quality=="":
+                video = videos[-1][2]
+            else:
+                for video in videos[::-1]:
+                    if video[2]["height"]==quality:
+                        video = video[2]
+                        break
+        if not videoOnly:
+            audio = audios[-1][2]
+        if videoOnly: audio="None"
+        if audioOnly: video="None"
         if not video or not audio:
             print("Quality Not Match URL")
             return -1
@@ -448,17 +484,27 @@ import urllib.request
 print("Get User Argument")
 #Handle User Argument
 parser = argparse.ArgumentParser(description="Youtube Video Downloader, Test on 2022.10.30 zh_TW.")
-parser.add_argument("-url", "-u", help="input a youtube url", type=str, default="")
+parser.add_argument("-url", "-u", help="input a youtube url. (str)", type=str, default="")
 parser.add_argument("-list", "-l", help="List all information of a youtube video, like video quality.", action="store_true")
-parser.add_argument("-quality", "-q", help="select a quality you want to view or download. Like Best, best, 1080, 720, 360, 240.", type=str, default="")
+parser.add_argument("-quality", "-q", help="select a quality you want to view or download. Like Best, best, 1080, 720, 360, 240. (str, default:\"\")", type=str, default="")
 parser.add_argument("-download", "-d", help="download the video. (required install ffmpeg on your device.)", action="store_true")
-parser.add_argument("-print", "-p", help="print the information and url that we get of a video", type=int, default=1)
-parser.add_argument("-fullPrint", "-fp", help="print information and decrypt function that extract from base.js and other debug values", type=int, default=0)
+parser.add_argument("-print", "-p", help="print the information and url that we get of a video. (int 1 or 0, default:1)", type=int, default=1)
+parser.add_argument("-fullPrint", "-fp", help="print information and decrypt function that extract from base.js and other debug values. (int 1 or 0, default:0)", type=int, default=0)
+parser.add_argument("-combine", "-c", help="after downloading, combine the video and audio or not. (int 1 or 0, default:1)", type=int, default=1)
+parser.add_argument("-transform", "-tr", help="after downloading, transform the media format or not. (int 1 or 0, default:1)", type=int, default=1)
+parser.add_argument("-remove", "-r", help="after downloading, remove the original medias we downloaded or not. (int 1 or 0, default:1)", type=int, default=1)
+parser.add_argument("-audioOnly", "-a", help="only download audio.", action="store_true")
+parser.add_argument("-videoOnly", "-v", help="only download video.", action="store_true")
 args = parser.parse_args()
 url, list_all, quality, download, prt, prt_full = args.url, args.list, args.quality, args.download, args.print, args.fullPrint
+combine, transform, remove, audioOnly, videoOnly = args.combine, args.transform, args.remove, args.audioOnly, args.videoOnly
 if not url:
     print("Input a url")
     url = input()
+if audioOnly==videoOnly==True:
+    audioOnly=videoOnly=False
+    print("The parameters both audioOnly and videoOnly is true, download all.")
+#result = Main(quality, prt, prt_full, list_all, download) #Debug
 error = 0
 while error<3:
     try:
