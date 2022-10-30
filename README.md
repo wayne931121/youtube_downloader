@@ -91,7 +91,7 @@ QE = function(a, b, c) {  //### This Function will decrypt signatureChiper ###//
     c = void 0 === c ? "" : c;
     a = new g.SB(a,!0);
     a.set("alr", "yes");
-    c && (c = Qwa(decodeURIComponent(c)), //### This Line will decrypt signatureChiper ###
+    c && (c = Qwa(decodeURIComponent(c)), //### This Line will decrypt signatureChiper ###//
     a.set(b, encodeURIComponent(c)));
     return a
 }
