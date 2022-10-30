@@ -100,6 +100,9 @@ What you can search in base.js is "{a=a.split("")", and continue search the func
 You can also see the details in:<br>
 https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/extractor/youtube.py#L1403
 
+## Base.js
+
+Base.js is the script which be use to decrypt signature cipher. 
 
 Here are some base.js url I got.
 
