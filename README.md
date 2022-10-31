@@ -42,6 +42,35 @@ python youtube.py -u https://www.youtube.com/watch?v=piEyKyJ4pFg
 python youtube.py -u https://www.youtube.com/watch?v=piEyKyJ4pFg -list
 python youtube.py -u https://www.youtube.com/watch?v=piEyKyJ4pFg -q best -download
 ```
+```cmd
+C:\Users\Username\Downloads>python youtube.py -u https://www.youtube.com/watch?v=piEyKyJ4pFg -l
+Get User Argument
+Download Source Code From Youtube...
+Type:      video/mp4; codecs="avc1.64002a", W×H  1920× 1080   1080P60, Fps  60, ContentLength 11491441.
+Type:             video/webm; codecs="vp9", W×H  1920× 1080   1080P60, Fps  60, ContentLength 21524684.
+Type:    video/mp4; codecs="av01.0.09M.08", W×H  1920× 1080   1080P60, Fps  60, ContentLength 20388193.
+Type:      video/mp4; codecs="avc1.4d401f", W×H  1280×  720      720P, Fps  30, ContentLength 6739974.
+Type:             video/webm; codecs="vp9", W×H  1280×  720      720P, Fps  30, ContentLength 8669807.
+Type:      video/mp4; codecs="avc1.4d4020", W×H  1280×  720    720P60, Fps  60, ContentLength 4441714.
+Type:             video/webm; codecs="vp9", W×H  1280×  720    720P60, Fps  60, ContentLength 8892222.
+Type:    video/mp4; codecs="av01.0.08M.08", W×H  1280×  720    720P60, Fps  60, ContentLength 11289786.
+Type:      video/mp4; codecs="avc1.4d401f", W×H   854×  480      480P, Fps  30, ContentLength 2481594.
+Type:             video/webm; codecs="vp9", W×H   854×  480      480P, Fps  30, ContentLength 4589130.
+Type:    video/mp4; codecs="av01.0.04M.08", W×H   854×  480      480P, Fps  30, ContentLength 4808813.
+Type:      video/mp4; codecs="avc1.4d401e", W×H   640×  360      360P, Fps  30, ContentLength 1837997.
+Type:             video/webm; codecs="vp9", W×H   640×  360      360P, Fps  30, ContentLength 3351050.
+Type:    video/mp4; codecs="av01.0.01M.08", W×H   640×  360      360P, Fps  30, ContentLength 3175510.
+Type:      video/mp4; codecs="avc1.4d4015", W×H   426×  240      240P, Fps  30, ContentLength 1131067.
+Type:             video/webm; codecs="vp9", W×H   426×  240      240P, Fps  30, ContentLength 2204153.
+Type:    video/mp4; codecs="av01.0.00M.08", W×H   426×  240      240P, Fps  30, ContentLength 2073347.
+Type:      video/mp4; codecs="avc1.4d400c", W×H   256×  144      144P, Fps  30, ContentLength 707892.
+Type:             video/webm; codecs="vp9", W×H   256×  144      144P, Fps  30, ContentLength 1780751.
+Type:    video/mp4; codecs="av01.0.00M.08", W×H   256×  144      144P, Fps  30, ContentLength 1596870.
+Type:        audio/mp4; codecs="mp4a.40.2", Bitrate  130494, Rate  44100, Channels 2, Quality  AUDIO_QUALITY_MEDIUM, ContentLength 3762144.
+Type:            audio/webm; codecs="opus", Bitrate   60499, Rate  48000, Channels 2, Quality     AUDIO_QUALITY_LOW, ContentLength 1461482.
+Type:            audio/webm; codecs="opus", Bitrate   79303, Rate  48000, Channels 2, Quality     AUDIO_QUALITY_LOW, ContentLength 1936759.
+Type:            audio/webm; codecs="opus", Bitrate  150852, Rate  48000, Channels 2, Quality  AUDIO_QUALITY_MEDIUM, ContentLength 3822436.
+```
 Should you use this to download youtube video?<br>
 A: No, use youtube-dl instead, because I may not maintain this project.
 
