@@ -215,8 +215,14 @@ def audio_size(d):
 def video_size(d):
     return d['width']*d['height']*d['fps']
 
+def live_client2(url, index, datas):
+    datas.append((index, request(url))) #在被分配好的陣列區塊存入媒體數據，store media datas to datas arrays assign index.
+    return 0
+
 #https://github.com/wayne931121/Https/blob/main/https_client.py
-def client(url, conn_index, index, datas, sq, buffersize=4096):
+def live_client(url, index, datas, sq, get_sq=0, buffersize=4096): 
+    #在直播客戶端狀態下，我們不知道content length，讓他接收資料並在超時後關閉連接。
+    #In live client, we don't know contentLength, so let it timeout and close.
     prt = 0
     reg = '(?P<url>(?:(?P<protocol>https?):\\/\\/)?(?P<domain>(?:[\\w\\d\\-]+\\.)+[\\w\\d\\-]+)(?::(?P<port>\\d+))?(?P<path>(?:\\/[^\\/\\"\'\\n?]*)*\\/?(?:\\?(?P<arg>[^"\'\\r\\n]*))?))'
     reg1 = b'Content-Length: (?P<length>\\d+)'
@@ -250,7 +256,7 @@ def client(url, conn_index, index, datas, sq, buffersize=4096):
                 print(recive_tmp)
             if b"\r\n\r\n" in recive_tmp:
                 recive_headers, eof_data = recive.split(b"\r\n\r\n")
-                sq[0] = int(re.search(b"X-Head-Seqnum: (?P<v>\\d+)", recive_headers)["v"])
+                sq[0] = int(re.search(b"X-Head-Seqnum: (?P<v>\\d+)", recive_headers)["v"]) #sq set [0]
                 break
         except socket.timeout as e:
             pass #print("TIME OUT")
@@ -260,14 +266,14 @@ def client(url, conn_index, index, datas, sq, buffersize=4096):
     #The length is the length in Content-Length Header Value
     #if length[0]==0:
     #    length[0] = int(content_finder.search(recive)["length"])
-    recive_content = eof_data + recive_file(conn, 0, eof_data, buffersize)
-    datas.append((index, recive_content)) #在被分配好的陣列區塊存入媒體數據，store media datas to datas arrays assign index.
+    recive_content = eof_data + live_recive_file(conn, 0, eof_data, buffersize)
+    if not get_sq: #if we don't recive or force close, it may response transfer-encoding-chucked that I don't want to process.
+        datas.append((index, recive_content)) #在被分配好的陣列區塊存入媒體數據，store media datas to datas arrays assign index.
     conn.shutdown(socket.SHUT_WR)
     conn.close()
-    conn_index.append(None) #conn_index的長度代表完成幾個進程，len(conns) is the the threading quantity that completed。
-    return 0
+    return lambda: recive_content
 
-def recive_file(conn, length, eof_data, buffersize):
+def live_recive_file(conn, length, eof_data, buffersize):
     #i = 0 # i is now length of all data we have recv.
     #i += len(eof_data)
     recive = b""
@@ -286,28 +292,86 @@ def recive_file(conn, length, eof_data, buffersize):
         recive += recive_tmp
     return recive
 
-def live_connect(media, filename, voa, typ): #快取大小65536, buffersize=65536
-    conns = [] #此長度為完成的進程數 len(conns) is the the threading quantity that completed
-    index = 0 #開過的進程數 all the threading quantity including completed or not completed
-    sq = [1]
+def live_connect(media, filename, voa, typ, live_folder): #快取大小65536, buffersize=65536 #下載直播串流使用, voa: video or audio.
+    ### 格式: https://rr$(\d)---sn-ipoxu-$(\w*4).googlevideo.com/videoplayback?expire=1667240141.......&sq=%d ###
+    global ctrlC, complete
+    conns = []
+    index = 0 #開過的進程數(開了幾個進程)，下載到的sq index。 all the threading quantity including completed or not completed
+    complete_index = 0 #完成的進程數 the the threading quantity that completed
+    sq = [1] #sq[0]是youtube直播到哪的數字(最大串流index)，預設sq[0]=1，不可下載到youtube未到的直播sq index。
     datas = []
     length = [0]
     limit = 9 #最多併發進程
+    start = None
+    livePath = live_folder+"/%s/"%voa
+    url = media["url"]+"&sq=0"
+    tryc = live_client(url, 0, datas, sq, get_sq=1)
+    #if sq[0]>10: index = complete_index = sq[0]-10 debug
+    if tryc()==b"":
+        index = complete_index = sq[0]-100000
     while 1:
-        if index-len(conns)<limit and index<sq[0]:
+        for i in range(len(conns))[::-1]:
+            if not conns[i].is_alive():
+                conns.pop(i)
+                complete_index += 1                
+        if index-complete_index<=limit and index<=sq[0]:
+            start = None
             url = media["url"]+"&sq=%d"%(index)
-            threading.Thread(target=client, args=(url, conns, index, datas, sq)).start()
+            client_thread = threading.Thread(target=live_client2, args=(url, index, datas))
+            client_thread.start()
+            conns.append(client_thread)
             index += 1
         time.sleep(0.1)
-        if len(datas)>0:
+        while len(datas)>0:
             d = datas.pop(0)
-            l = "live/%s/"%voa+filename+"_%d.%s"%(d[0], typ)
+            l = livePath+filename+"_%d.%s"%(d[0], typ)
             with open(l, "wb") as f:
                 f.write(d[1])
-    print("")
-    return datas
-def media_download(video, audio, title):
+        else: #len(data)==0
+            url = media["url"]+"&sq=%d"%(index)
+            live_client(url, index-1, datas, sq, get_sq=1)
+            if start==None:
+                start = time.time() #seconds
+            else:
+                if time.time()-start > 60 and index==complete_index: #1分鐘超時沒新直播，所有進程接完成。 1 minutes timeout, all threading complete.
+                    break
+        if ctrlC: break
+    while index!=complete_index:
+        for i in range(len(conns))[::-1]:
+            if not conns[i].is_alive():
+                conns.pop(i)
+                complete_index += 1  
+        time.sleep(0.01)
+    while len(datas)>0:
+        d = datas.pop(0)
+        l = livePath+filename+"_%d.%s"%(d[0], typ)
+        with open(l, "wb") as f:
+            f.write(d[1])
+    print(voa, "complete")
+    complete[voa] = livePath
+    return 0
+def combineFile(folder):
+    s, g = os.listdir(folder), []
+    mtyp = s[0].split(".")[-1] #media type
+    filename = "_".join(".".join(s[0].split(".")[0:-1]).split("_")[0:-1])
+    for i in s:
+        g.append((int(".".join(i.split(".")[0:-1]).split("_")[-1]),i))
+    g.sort()
+    target = filename+"."+mtyp
+    with open(target, "ab") as f:
+        for i, file in g:
+            with open(os.path.join(folder, file), "rb") as part:
+                f.write(part.read())
+    return target    
+def live_media_download(video, audio, title):
+    global ctrlC, complete
+    ctrlC = 0
+    complete = {} #complete變數不可用數字，入果兩個線程同時調用會發生衝突
     title = title.replace("/", ",") #file path will use "/", filename deny "/"
+    live_folder = "live_%s"%title
+    os.mkdir(live_folder)
+    os.mkdir(live_folder+"/audio")
+    os.mkdir(live_folder+"/video")
     video_filename = audio_filename = video_datas = audio_datas = cmd = ""
     download_both = (not videoOnly) and (not audioOnly)
     if download_both:
@@ -319,13 +383,33 @@ def media_download(video, audio, title):
     
     if not audioOnly:
         vtype = video["mimeType"].split("/")[1].split(";")[0]
-        video_filename = "%s_video.%s"%(title, vtype)
-        threading.Thread(target=live_connect, args=(video, video_filename, "video", vtype)).start()
+        video_filename = "%s_video"%(title)
+        threading.Thread(target=live_connect, args=(video, video_filename, "video", vtype, live_folder)).start()
     if not videoOnly:
         atype = audio["mimeType"].split("/")[1].split(";")[0]
-        audio_filename = "%s_audio.%s"%(title, atype)
-        threading.Thread(target=live_connect, args=(audio, audio_filename, "audio", atype)).start()
-
+        audio_filename = "%s_audio"%(title)
+        threading.Thread(target=live_connect, args=(audio, audio_filename, "audio", atype, live_folder)).start()
+    while 1:
+        time.sleep(0.01)
+        signal.signal(signal.SIGINT, signal_handler)
+        if len(complete)==2:
+            time.sleep(0.01)
+            break
+    print("Combine File...")
+    v = combineFile(complete["video"])
+    a = combineFile(complete["audio"])
+    filename = "_".join(v.split("_")[0:-1])
+    cmd = 'ffmpeg -i "%s" -i "%s" -c:v libx264 -c:a aac -y "%s.mp4"'%(v, a, filename)
+    print(cmd)
+    res = os.system(cmd)
+    if res==0:
+        os.remove(v)
+        os.remove(a)
+    return 0
+def signal_handler(sig, frame):
+    global ctrlC
+    ctrlC = 1
+    print('Shutdown...')
 def process_title(match):
     # https://stackoverflow.com/questions/29314231/what-is-39-and-why-does-google-search-replace-it-with-apostrophe
     return chr(int(match["ascii_code"]))
@@ -443,8 +527,7 @@ def Main(quality="", prt=1, prt_full=0, list_all=False, download=False):
             print("Quality Not Match URL")
             return -1
         print("\n")
-        download_datas = media_download(video, audio, title)
-    print("\ncomplete")
+        download_datas = live_media_download(video, audio, title)
     return (videos, audios, download_datas)
 
 """
@@ -454,7 +537,7 @@ https://www.youtube.com/watch?v=UF8uR6Z6KLc
 https://www.youtube.com/watch?v=piEyKyJ4pFg
 """
 import re, time, ssl, socket, sys, json, os
-import subprocess, threading, argparse
+import subprocess, threading, argparse, signal
 import urllib.parse
 import urllib.request
 
@@ -467,21 +550,23 @@ parser.add_argument("-quality", "-q", help="select a quality you want to view or
 parser.add_argument("-download", "-d", help="download the video. (required install ffmpeg on your device.)", action="store_true")
 parser.add_argument("-print", "-p", help="print the information and url that we get of a video. (int 1 or 0, default:1)", type=int, default=1)
 parser.add_argument("-fullPrint", "-fp", help="print information and decrypt function that extract from base.js and other debug values. (int 1 or 0, default:0)", type=int, default=0)
-parser.add_argument("-combine", "-c", help="after downloading, combine the video and audio or not. (int 1 or 0, default:1)", type=int, default=1)
-parser.add_argument("-transform", "-tr", help="after downloading, transform the media format or not. (int 1 or 0, default:1)", type=int, default=1)
-parser.add_argument("-remove", "-r", help="after downloading, remove the original medias we downloaded or not. (int 1 or 0, default:1)", type=int, default=1)
-parser.add_argument("-audioOnly", "-a", help="only download audio.", action="store_true")
-parser.add_argument("-videoOnly", "-v", help="only download video.", action="store_true")
+#parser.add_argument("-combine", "-c", help="after downloading, combine the video and audio or not. (int 1 or 0, default:1)", type=int, default=1)
+#parser.add_argument("-transform", "-tr", help="after downloading, transform the media format or not. (int 1 or 0, default:1)", type=int, default=1)
+#parser.add_argument("-remove", "-r", help="after downloading, remove the original medias we downloaded or not. (int 1 or 0, default:1)", type=int, default=1)
+#parser.add_argument("-audioOnly", "-a", help="only download audio.", action="store_true")
+#parser.add_argument("-videoOnly", "-v", help="only download video.", action="store_true")
 parser.add_argument("-debug", help="debug.", action="store_true")
 args = parser.parse_args()
 url, list_all, quality, download, prt, prt_full = args.url, args.list, args.quality, args.download, args.print, args.fullPrint
-combine, transform, remove, audioOnly, videoOnly, debug = args.combine, args.transform, args.remove, args.audioOnly, args.videoOnly, args.debug
+combine, transform, remove, audioOnly, videoOnly, debug = "args.combine", "args.transform", "args.remove", "args.audioOnly", "args.videoOnly", args.debug
 if not url:
     print("Input a url")
     url = input()
-if audioOnly==videoOnly==True:
-    audioOnly=videoOnly=False
-    print("The parameters both audioOnly and videoOnly is true, download all.")
+#if audioOnly==videoOnly==True:
+#    audioOnly=videoOnly=False
+#    print("The parameters both audioOnly and videoOnly is true, download all.")
+audioOnly = videoOnly = False
+
 if debug:
     result = Main(quality, prt, prt_full, list_all, download) #Debug
     sys.exit(0)
@@ -495,8 +580,5 @@ while error<3:
         error += 1
 if error==3:
     print("Failed")
-
-
-
 
 
