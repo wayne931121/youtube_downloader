@@ -41,6 +41,9 @@ Example:
 python youtube.py -u https://www.youtube.com/watch?v=piEyKyJ4pFg
 python youtube.py -u https://www.youtube.com/watch?v=piEyKyJ4pFg -list
 python youtube.py -u https://www.youtube.com/watch?v=piEyKyJ4pFg -q best -download
+Experiment:
+python live.py -u "youtube video url which is live now" -list
+python live.py -u "youtube video url which is live now" -q best -download
 ```
 ```cmd
 C:\Users\Username\Downloads>python youtube.py -u https://www.youtube.com/watch?v=piEyKyJ4pFg -l
