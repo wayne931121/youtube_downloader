@@ -45,6 +45,7 @@ python youtube.py -u https://www.youtube.com/watch?v=piEyKyJ4pFg -q best -downlo
 Experiment:
 python live.py -u "youtube video url which is live now" -list
 python live.py -u "youtube video url which is live now" -q best -download
+python combine.py -f "the folder that is created by live.py"
 ```
 ```cmd
 C:\Users\Username\Downloads>python youtube.py -u https://www.youtube.com/watch?v=piEyKyJ4pFg -l
