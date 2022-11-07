@@ -85,6 +85,7 @@ def pretty_print(d):
         return None
 
 def pretty_print_assign(d):
+    if not 'contentLength' in d: d['contentLength']="unknown"
     if "video" in d['mimeType']:
         i = [d['mimeType'], d['width'], d['height'], d['qualityLabel'].upper(), d['fps'], d['contentLength']]
         s = "Type: %36s, W×H %5d×%5d %9s, Fps %3d, ContentLength %s. "%(*i, )
@@ -308,7 +309,7 @@ def media_connect(media, filename): #快取大小65536, buffersize=65536
     return datas
 
 def media_download(video, audio, title):
-    title = title.replace("/", ",") #file path will use "/", filename deny "/"
+    title = re.sub('[\\\\\\/\\:\\?\\"\\\'\\*\\>\\<\\|]', ",", title) #file path will use "/", filename deny "/" # [\\\/\:\?\"\'\*\>\<\|]
     video_filename = audio_filename = video_datas = audio_datas = cmd = ""
     download_both = (not videoOnly) and (not audioOnly)
     if download_both:
@@ -422,6 +423,7 @@ def Main(quality="", prt=1, prt_full=0, list_all=False, download=False):
         if sigcipher: 
             sigcipher = decrypt.Decrypt_Signature_Cipher(sigcipher)
             media_url = media_url+"&alr=yes&sig="+sigcipher
+        if not 'contentLength' in data: data['contentLength']="unknown"
         i += 1
         if prt and quality!="best" and (quality=="" or ("video" in data["mimeType"] and data["height"]==quality)):
             if (not videoOnly and "audio" in data["mimeType"]) or (not audioOnly and "video" in data["mimeType"]):
@@ -495,16 +497,19 @@ parser.add_argument("-transform", "-tr", help="after downloading, transform the 
 parser.add_argument("-remove", "-r", help="after downloading, remove the original medias we downloaded or not. (int 1 or 0, default:1)", type=int, default=1)
 parser.add_argument("-audioOnly", "-a", help="only download audio.", action="store_true")
 parser.add_argument("-videoOnly", "-v", help="only download video.", action="store_true")
+parser.add_argument("-debug", help="debug.", action="store_true")
 args = parser.parse_args()
 url, list_all, quality, download, prt, prt_full = args.url, args.list, args.quality, args.download, args.print, args.fullPrint
-combine, transform, remove, audioOnly, videoOnly = args.combine, args.transform, args.remove, args.audioOnly, args.videoOnly
+combine, transform, remove, audioOnly, videoOnly, debug = args.combine, args.transform, args.remove, args.audioOnly, args.videoOnly, args.debug
 if not url:
     print("Input a url")
     url = input()
 if audioOnly==videoOnly==True:
     audioOnly=videoOnly=False
     print("The parameters both audioOnly and videoOnly is true, download all.")
-#result = Main(quality, prt, prt_full, list_all, download) #Debug
+if debug:
+    result = Main(quality, prt, prt_full, list_all, download) #Debug
+    sys.exit(0)
 error = 0
 while error<3:
     try:
