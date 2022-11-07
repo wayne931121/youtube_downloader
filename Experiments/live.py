@@ -367,7 +367,7 @@ def live_media_download(video, audio, title):
     global ctrlC, complete
     ctrlC = 0
     complete = {} #complete變數不可用數字，入果兩個線程同時調用會發生衝突
-    title = title.replace("/", ",") #file path will use "/", filename deny "/"
+    title = re.sub('[\\\\\\/\\:\\?\\"\\\'\\*\\>\\<\\|]', ",", title) #file path will use "/", filename deny "/" # [\\\/\:\?\"\'\*\>\<\|]
     live_folder = "live_%s"%title
     os.mkdir(live_folder)
     os.mkdir(live_folder+"/audio")
@@ -580,5 +580,6 @@ while error<3:
         error += 1
 if error==3:
     print("Failed")
+
 
 
