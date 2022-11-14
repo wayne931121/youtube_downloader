@@ -1,6 +1,8 @@
 # youtube downloader
 download youtube video, decrypt signature cipher, test on 2022.10.29 zh_TW.
 
+[Colab Tutorial](https://colab.research.google.com/github/wayne931121/youtube_downloader/blob/main/%E6%8E%A2%E7%B4%A2Youtube/colab/Colab_Youtube_Downloader.ipynb)
+
 ```cmd
 C:\Users\Username\Downloads>python youtube.py -u https://www.youtube.com/watch?v=piEyKyJ4pFg -h
 Get User Argument
